@@ -7,6 +7,10 @@ package csci152.fss;
 
 import csci152.adt.Queue;
 import csci152.adt.SortedQueue;
+import csci152.adt.Stack;
+import csci152.impl.LinkedListStack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,46 +19,115 @@ import csci152.adt.SortedQueue;
 public class FileSystem implements FileSystemInterface {
 
   Folder root, currentFolder;
+  Stack<Command> history;
 
   FileSystem(String rootName) {
 	root = new Folder(rootName, null);
 	currentFolder = root;
+	history = new LinkedListStack<>();
   }
 
   @Override
   public void doCommand(Command cmd) {
+	boolean okay = false;
 	switch (cmd.getCommandCode()) {
-	  case Command.MAKE_FOLDER:
+	  case Command.MAKE_FOLDER: {
 		Folder newFolder = new Folder(cmd.getName(), currentFolder);
-		currentFolder.addFolderOrDoucument(newFolder);
+		okay = currentFolder.addFolderOrDoucument(newFolder);
 		break;
-	  case Command.MAKE_DOCUMENT:
+	  }
+	  case Command.MAKE_DOCUMENT: {
 		Document newDocument = new Document(cmd.getName(), currentFolder);
-		currentFolder.addFolderOrDoucument(newDocument);
+		okay = currentFolder.addFolderOrDoucument(newDocument);
 		break;
-	  case Command.GO_INTO_FOLDER:
+	  }
+	  case Command.REMOVE_EMPTY_FODLER: {
+		okay = currentFolder.removeFolder(cmd.getName());
+		break;
+	  }
+	  case Command.REMOVE_DOCUMENT: {
+		okay = currentFolder.removeDocument(cmd.getName());
+		break;
+	  }
+	  case Command.GO_UP_ONE_FOLDER: {
+		if (currentFolder == root) {
+		  System.out.println("Current folder is already root");
+		  okay = false;
+		  break;
+		}
+		cmd.setName(currentFolder.getName());
+		currentFolder = currentFolder.getParent();
+		okay = true;
+		break;
+	  }
+	  case Command.GO_INTO_FOLDER: {
 		FolderOrDocument value = currentFolder.getObject(cmd.getName());
 		if (value == null || !value.isFolder()) {
 		  System.out.println("No such folder");
+		  okay = false;
 		  break;
 		}
 		currentFolder = (Folder) value;
+		okay = true;
 		break;
-	  case Command.GO_UP_ONE_FOLDER:
-		if (currentFolder == root) {
-		  System.out.println("Current folder is already root");
-		  break;
-		}
-		currentFolder = currentFolder.getParent();
-		break;
-	  default:
-		throw new UnsupportedOperationException("Not supported yet.");
+	  }
+	  default: {
+		okay = false;
+//		throw new UnsupportedOperationException("Not supported yet.");
+	  }
+	}
+	if (okay) {
+	  history.push(cmd);
 	}
   }
 
   @Override
   public void undoLastCommand() {
-	throw new UnsupportedOperationException("Not supported yet.");
+	if (history.getSize() <= 0) {
+	  System.out.println("No commands to undo");
+	  return;
+	}
+	Command cmd;
+	try {
+	  cmd = history.pop();
+	} catch (Exception ex) {
+	  System.out.println("Something really bad happened " + ex);
+	  return;
+	}
+	switch (cmd.getCommandCode()) {
+	  case Command.MAKE_FOLDER: {
+		currentFolder.removeFolder(cmd.getName());
+		break;
+	  }
+	  case Command.MAKE_DOCUMENT: {
+		currentFolder.removeDocument(cmd.getName());
+		break;
+	  }
+	  case Command.REMOVE_EMPTY_FODLER: {
+		Folder folder = new Folder(cmd.getName(), currentFolder);
+		currentFolder.addFolderOrDoucument(folder);
+		break;
+	  }
+	  case Command.REMOVE_DOCUMENT: {
+		Document document = new Document(cmd.getName(), currentFolder);
+		currentFolder.addFolderOrDoucument(document);
+		break;
+	  }
+	  case Command.GO_UP_ONE_FOLDER: {
+		FolderOrDocument value = currentFolder.getObject(cmd.getName());
+		currentFolder = (Folder) value;
+		break;
+	  }
+	  case Command.GO_INTO_FOLDER: {
+		cmd.setName(currentFolder.getName());
+		currentFolder = currentFolder.getParent();
+		break;
+	  }
+	  default: {
+		return;
+//		throw new UnsupportedOperationException("Not supported yet.");
+	  }
+	}
   }
 
   @Override

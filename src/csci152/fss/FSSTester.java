@@ -17,29 +17,45 @@ public class FSSTester {
   public static void main(String[] args) throws Exception {
 
 	FSSTester tester = new FSSTester();
-//	tester.runTests();
-	tester.runCustomTests();
+	tester.runTests();
+//	tester.runCustomTests();
   }
 
   public void runCustomTests() throws Exception {
 	fss.doCommand(new Command(Command.MAKE_FOLDER, "folder1"));
-	System.out.println(fss.getAllPaths());
-	
+	fss.listContents();
+
 	fss.doCommand(new Command(Command.MAKE_DOCUMENT, "document.doc"));
-	System.out.println(fss.getAllPaths());
+	fss.listContents();
+
+	fss.doCommand(new Command(Command.GO_INTO_FOLDER, "folder1"));
+	fss.listContents();
+
+	fss.doCommand(new Command(Command.MAKE_DOCUMENT, "inside_doc.doc"));
+	fss.listContents();
+
+	fss.doCommand(new Command(Command.GO_UP_ONE_FOLDER));
+	fss.listContents();
+
+	fss.doCommand(new Command(Command.REMOVE_EMPTY_FODLER, "folder1"));
+	System.out.println("remove folder " + fss.getAllPaths());
 	
 	fss.doCommand(new Command(Command.GO_INTO_FOLDER, "folder1"));
-	System.out.println(fss.getAllPaths());
+	System.out.println("go into " + fss.getAllPaths());
 	
-	fss.doCommand(new Command(Command.MAKE_DOCUMENT, "inside_doc.doc"));
-	System.out.println(fss.getAllPaths());
-	
-	fss.doCommand(new Command(Command.GO_UP_ONE_FOLDER));
-	System.out.println(fss.getAllPaths());
-	
+	fss.doCommand(new Command(Command.REMOVE_DOCUMENT, "inside_doc.doc"));
+	System.out.println("remove document " + fss.getAllPaths());
+
+//	System.out.println("************************");
+//	System.out.println(fss.getAllPaths());
+	System.out.println("************************");
+	for (int i = 0; i < 10; i++) {
+	  fss.undoLastCommand();
+//	  System.out.println(fss.getAllPaths());
+	}
 	fss.listContents();
   }
-  
+
   public void runTests() throws Exception {
 
 	fss.undoLastCommand();

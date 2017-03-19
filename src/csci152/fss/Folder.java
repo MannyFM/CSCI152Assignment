@@ -14,12 +14,61 @@ public class Folder extends FolderOrDocument {
 	contents = new LinkedListQueue<>();
   }
 
-  public void addFolderOrDoucument(FolderOrDocument doc) {
+  public boolean addFolderOrDoucument(FolderOrDocument doc) {
 	if (this.isNameInFolder(doc.getName())) {
-	  System.out.println("Folder already has such object");
-	  return;
+	  System.out.println("There already exists such object");
+	  return false;
 	}
 	contents.enqueue(doc);
+	return true;
+  }
+
+  public boolean removeFolder(String name) {
+	try {
+	  for (int i = 0; i < contents.getSize(); i++) {
+		FolderOrDocument tmp = contents.dequeue();
+		if (tmp.getName().equals(name)) {
+		  if (!tmp.isFolder()) {
+			System.out.println(name + " is not folder");
+			contents.enqueue(tmp);
+			return false;
+		  }
+		  Folder folder = (Folder) tmp;
+		  if (!folder.isEmpty()) {
+			System.out.println(name + " is not empty");
+			contents.enqueue(tmp);
+			return false;
+		  }
+		  return true;
+		}
+		contents.enqueue(tmp);
+	  }
+	} catch (Exception ex) {
+	  System.out.println("Something really bad happened " + ex);
+	}
+	System.out.println("No such folder");
+	return false;
+  }
+
+  public boolean removeDocument(String name) {
+	try {
+	  for (int i = 0; i < contents.getSize(); i++) {
+		FolderOrDocument tmp = contents.dequeue();
+		if (tmp.getName().equals(name)) {
+		  if (tmp.isFolder()) {
+			System.out.println(name + " is folder");
+			contents.enqueue(tmp);
+			return false;
+		  }
+		  return true;
+		}
+		contents.enqueue(tmp);
+	  }
+	} catch (Exception ex) {
+	  System.out.println("Something really bad happened " + ex);
+	}
+	System.out.println("No such document");
+	return false;
   }
 
   public FolderOrDocument getObject(String name) {
@@ -80,13 +129,16 @@ public class Folder extends FolderOrDocument {
 	} catch (Exception ex) {
 	  System.out.println("Something really bad happened " + ex);
 	}
-	// TODO: Implement me!!!
 	return result;
   }
 
   @Override
   public boolean isFolder() {
 	return true;
+  }
+
+  public boolean isEmpty() {
+	return contents.getSize() == 0;
   }
 
   // Don't change.... this is used for testing
