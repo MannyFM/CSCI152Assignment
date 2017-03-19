@@ -22,12 +22,19 @@ public class FSSTester {
   }
 
   public void runCustomTests() throws Exception {
-	Command makeFolder = new Command(Command.MAKE_FOLDER, "folder");
-	fss.doCommand(makeFolder);
+	fss.doCommand(new Command(Command.MAKE_FOLDER, "folder1"));
 	System.out.println(fss.getAllPaths());
 	
-	Command makeDocument = new Command(Command.MAKE_DOCUMENT, "document.doc");
-	fss.doCommand(makeDocument);
+	fss.doCommand(new Command(Command.MAKE_DOCUMENT, "document.doc"));
+	System.out.println(fss.getAllPaths());
+	
+	fss.doCommand(new Command(Command.GO_INTO_FOLDER, "folder1"));
+	System.out.println(fss.getAllPaths());
+	
+	fss.doCommand(new Command(Command.MAKE_DOCUMENT, "inside_doc.doc"));
+	System.out.println(fss.getAllPaths());
+	
+	fss.doCommand(new Command(Command.GO_UP_ONE_FOLDER));
 	System.out.println(fss.getAllPaths());
 	
 	fss.listContents();

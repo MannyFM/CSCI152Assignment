@@ -14,13 +14,29 @@ public class Folder extends FolderOrDocument {
 	contents = new LinkedListQueue<>();
   }
 
-  public boolean addFolderOrDoucument(FolderOrDocument doc) {
-	if (this.isNameInFolder(doc.getName()))
-	  return false;
+  public void addFolderOrDoucument(FolderOrDocument doc) {
+	if (this.isNameInFolder(doc.getName())) {
+	  System.out.println("Folder already has such object");
+	  return;
+	}
 	contents.enqueue(doc);
-	return true;
   }
-  
+
+  public FolderOrDocument getObject(String name) {
+	try {
+	  for (int i = 0; i < contents.getSize(); i++) {
+		FolderOrDocument tmp = contents.dequeue();
+		contents.enqueue(tmp);
+		if (tmp.getName().equals(name)) {
+		  return tmp;
+		}
+	  }
+	} catch (Exception ex) {
+	  System.out.println("Something really bad happened " + ex);
+	}
+	return null;
+  }
+
   public Queue<FolderOrDocument> getContents() {
 	return contents;
   }
@@ -36,8 +52,9 @@ public class Folder extends FolderOrDocument {
 	  for (int i = 0; i < contents.getSize(); i++) {
 		FolderOrDocument value = contents.dequeue();
 		contents.enqueue(value);
-		if (value.getName().equals(aName))
+		if (value.getName().equals(aName)) {
 		  return true;
+		}
 	  }
 	} catch (Exception ex) {
 	  System.out.println("Something really bad happened " + ex);

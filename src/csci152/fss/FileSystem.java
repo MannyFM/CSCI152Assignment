@@ -33,6 +33,19 @@ public class FileSystem implements FileSystemInterface {
 		currentFolder.addFolderOrDoucument(newDocument);
 		break;
 	  case Command.GO_INTO_FOLDER:
+		FolderOrDocument value = currentFolder.getObject(cmd.getName());
+		if (value == null || !value.isFolder()) {
+		  System.out.println("No such folder");
+		  break;
+		}
+		currentFolder = (Folder) value;
+		break;
+	  case Command.GO_UP_ONE_FOLDER:
+		if (currentFolder == root) {
+		  System.out.println("Current folder is already root");
+		  break;
+		}
+		currentFolder = currentFolder.getParent();
 		break;
 	  default:
 		throw new UnsupportedOperationException("Not supported yet.");
