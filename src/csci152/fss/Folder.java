@@ -14,6 +14,13 @@ public class Folder extends FolderOrDocument {
 	contents = new LinkedListQueue<>();
   }
 
+  public boolean addFolderOrDoucument(FolderOrDocument doc) {
+	if (this.isNameInFolder(doc.getName()))
+	  return false;
+	contents.enqueue(doc);
+	return true;
+  }
+  
   public Queue<FolderOrDocument> getContents() {
 	return contents;
   }
@@ -22,10 +29,19 @@ public class Folder extends FolderOrDocument {
    * Use to check if there is an item in this folder with the given name.
    *
    * @param aName the name to check for
-   * @return true iff there is a document or folder with aName in this folder
+   * @return true if there is a document or folder with aName in this folder
    */
   public boolean isNameInFolder(String aName) {
-
+	try {
+	  for (int i = 0; i < contents.getSize(); i++) {
+		FolderOrDocument value = contents.dequeue();
+		contents.enqueue(value);
+		if (value.getName().equals(aName))
+		  return true;
+	  }
+	} catch (Exception ex) {
+	  System.out.println("Something really bad happened " + ex);
+	}
 	// TODO: Implement me!!!
 	return false;
   }
@@ -37,9 +53,18 @@ public class Folder extends FolderOrDocument {
    * lexicographic order
    */
   public SortedQueue<String> getContentNames() {
-
+	SortedQueue<String> result = new LinkedListSortedQueue<>();
+	try {
+	  for (int i = 0; i < contents.getSize(); i++) {
+		FolderOrDocument value = contents.dequeue();
+		contents.enqueue(value);
+		result.insert(value.getName());
+	  }
+	} catch (Exception ex) {
+	  System.out.println("Something really bad happened " + ex);
+	}
 	// TODO: Implement me!!!
-	return null;
+	return result;
   }
 
   @Override

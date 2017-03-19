@@ -17,9 +17,22 @@ public class FSSTester {
   public static void main(String[] args) throws Exception {
 
 	FSSTester tester = new FSSTester();
-	tester.runTests();
+//	tester.runTests();
+	tester.runCustomTests();
   }
 
+  public void runCustomTests() throws Exception {
+	Command makeFolder = new Command(Command.MAKE_FOLDER, "folder");
+	fss.doCommand(makeFolder);
+	System.out.println(fss.getAllPaths());
+	
+	Command makeDocument = new Command(Command.MAKE_DOCUMENT, "document.doc");
+	fss.doCommand(makeDocument);
+	System.out.println(fss.getAllPaths());
+	
+	fss.listContents();
+  }
+  
   public void runTests() throws Exception {
 
 	fss.undoLastCommand();

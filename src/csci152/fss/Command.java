@@ -101,6 +101,7 @@ public class Command {
   /**
    * @return the string representation of the command
    */
+  @Override
   public String toString() {
 	return "Code:" + cmdCode + " NameArg:" + name;
   }
